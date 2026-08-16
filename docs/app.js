@@ -346,7 +346,26 @@ function render() {
   if (sort === 'highlow') list.sort((a, b) => priceNum(b.price) - priceNum(a.price));
 
   const grid = $('grid');
-  grid.replaceChildren(...list.map(card));
+  // Group under category headings only in default order — a price sort or an
+  // active search is a different question, and headings would fight the answer.
+  if (sort === 'featured' && !cat && !q) {
+    const nodes = [];
+    let current = null;
+    for (const i of list) {
+      const c = i['category_' + lang] || i.category_en;
+      if (c !== current) {
+        current = c;
+        const n = list.filter(x => (x['category_' + lang] || x.category_en) === c).length;
+        const h = el('h3', 'section');
+        h.append(el('span', 'section-name', c), el('span', 'section-count', n));
+        nodes.push(h);
+      }
+      nodes.push(card(i));
+    }
+    grid.replaceChildren(...nodes);
+  } else {
+    grid.replaceChildren(...list.map(card));
+  }
   $('empty').hidden = list.length > 0;
 }
 

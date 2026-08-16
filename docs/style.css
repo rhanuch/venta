@@ -176,6 +176,24 @@ main {
   align-content: start;
 }
 
+/* category dividers — full-bleed across the grid */
+.section {
+  grid-column: 1 / -1;
+  display: flex; align-items: center; gap: .7rem;
+  margin: 1.5rem 0 -.25rem; font-size: var(--t-sm); font-weight: 600;
+}
+.section:first-child { margin-top: 0; }
+.section-name {
+  text-transform: uppercase; letter-spacing: var(--track-caps); color: var(--muted);
+}
+.section-count {
+  font-size: var(--t-2xs); color: var(--muted); background: var(--neutral-bg);
+  border-radius: 999px; padding: .1rem .45rem; font-variant-numeric: tabular-nums;
+}
+.section::after {
+  content: ""; flex: 1; height: 1px; background: var(--line);
+}
+
 .card {
   background: var(--card); border: 1px solid var(--line); border-radius: 12px;
   overflow: hidden; display: flex; flex-direction: column;
