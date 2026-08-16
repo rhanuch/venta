@@ -31,6 +31,7 @@ const T = {
     wa: 'WhatsApp',
     smsBody: n => `Hi! I'm interested in the "${n}" from your moving sale.`,
     footer: a => `Pickup in ${a}. Venmo or cash. Message me and we'll sort out a time.`,
+    trust: 'Every scratch and chip is in the description. Ask me anything.',
     stats: (n, f) => `${n} items` + (f ? ` · ${f} free` : ''),
   },
   es: {
@@ -56,6 +57,7 @@ const T = {
     wa: 'WhatsApp',
     smsBody: n => `¡Hola! Me interesa "${n}" de tu venta por mudanza.`,
     footer: a => `Retiro en ${a}. Venmo o efectivo. Escribime y coordinamos.`,
+    trust: 'Cada detalle y rayita está en la descripción. Pregúntame lo que sea.',
     stats: (n, f) => `${n} artículos` + (f ? ` · ${f} gratis` : ''),
   },
 };
@@ -203,7 +205,14 @@ function card(item) {
   }
 
   const body = el('div', 'body');
-  body.append(el('h2', null, name));
+  const titlerow = el('div', 'titlerow');
+  titlerow.append(el('h2', null, name));
+  const isFree = priceNum(item.price) === 0 && item.price !== '';
+  const wrap = el('span', 'pricewrap');
+  wrap.append(el('span', 'price' + (isFree ? ' free' : ''), priceText(item.price)));
+  if (item.retail) wrap.append(el('span', 'retail', t.retail(priceText(item.retail))));
+  titlerow.append(wrap);
+  body.append(titlerow);
 
   const badges = el('div', 'badges');
   badges.append(el('span', 'badge status-' + status, t.status[status]));
@@ -218,11 +227,6 @@ function card(item) {
   if (notes) body.append(el('p', 'notes', notes));
 
   const foot = el('div', 'foot');
-  const isFree = priceNum(item.price) === 0 && item.price !== '';
-  const wrap = el('span', 'pricewrap');
-  wrap.append(el('span', 'price' + (isFree ? ' free' : ''), priceText(item.price)));
-  if (item.retail) wrap.append(el('span', 'retail', t.retail(priceText(item.retail))));
-  foot.append(wrap);
   if (status !== 'sold') {
     const msg = encodeURIComponent(t.smsBody(name));
     const sms = el('a', 'btn', t.sms);
@@ -338,6 +342,7 @@ function boot(text) {
   $('hidesoldlabel').textContent = t.hidesold;
   $('empty').textContent = t.empty;
   $('footer').textContent = t.footer(AREA[lang]);
+  $('trust').textContent = t.trust;
   $('updated').textContent = t.updated(
     new Date().toLocaleDateString(lang === 'es' ? 'es' : 'en', { day: 'numeric', month: 'short' })
   );
