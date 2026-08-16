@@ -309,7 +309,8 @@ h2 {
 .status-sold      { background: var(--bad-bg);  color: var(--bad-ink); }
 
 .cond-new        { background: var(--ok-bg);      color: var(--ok-ink); }
-.cond-like_new   { background: var(--info-bg);    color: var(--info-ink); }
+.cond-like_new   { background: var(--ok-bg);      color: var(--ok-ink); }
+.cond-very_good  { background: var(--info-bg);    color: var(--info-ink); }
 .cond-good       { background: var(--neutral-bg); color: var(--neutral-ink); }
 .cond-fair       { background: var(--warn-bg);    color: var(--warn-ink); }
 
