@@ -34,7 +34,7 @@ const T = {
   },
   es: {
     title: 'Venta por mudanza',
-    intro: 'Me vuelvo a Chile y tengo que vender algunas de mis cosas. Todos los precios son negociables — ¡compartilo con tus amigos si podés! — Rodrigo',
+    intro: 'Me voy a volver a Chile y tengo que vender algunas de mis cosas. Todos los precios son conversables. ¡Si puedes compartirlo con tus amigos sería épico! — Rodrigo',
     payment: 'Venmo o efectivo',
     updated: d => 'Actualizado ' + d,
     other: 'English',
