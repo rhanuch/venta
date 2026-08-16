@@ -26,6 +26,7 @@ const T = {
     size: { small: 'Small', medium: 'Medium', large: 'Large' },
     ask: 'Ask',
     free: 'Free',
+    retail: p => `${p} new`,
     sms: 'Text',
     wa: 'WhatsApp',
     smsBody: n => `Hi! I'm interested in the "${n}" from your moving sale.`,
@@ -50,6 +51,7 @@ const T = {
     size: { small: 'Chico', medium: 'Mediano', large: 'Grande' },
     ask: 'Consultar',
     free: 'Gratis',
+    retail: p => `${p} nuevo`,
     sms: 'Mensaje',
     wa: 'WhatsApp',
     smsBody: n => `¡Hola! Me interesa "${n}" de tu venta por mudanza.`,
@@ -171,6 +173,7 @@ function card(item) {
   const isFree = priceNum(item.price) === 0 && item.price !== '';
   const wrap = el('span', 'pricewrap');
   wrap.append(el('span', 'price' + (isFree ? ' free' : ''), priceText(item.price)));
+  if (item.retail) wrap.append(el('span', 'retail', t.retail(priceText(item.retail))));
   foot.append(wrap);
   if (status !== 'sold') {
     const msg = encodeURIComponent(t.smsBody(name));
