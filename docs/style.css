@@ -246,7 +246,7 @@ h2 { font-size: 1.06rem; margin: 0; letter-spacing: -.01em; line-height: 1.3; }
 .cond-fair       { background: var(--warn-bg);    color: var(--warn-ink); }
 
 .pickup-pickup     { background: var(--neutral-bg); color: var(--neutral-ink); }
-.pickup-coordinate { background: var(--cool-bg);    color: var(--cool-ink); }
+.pickup-coordinate { background: var(--info-bg);    color: var(--info-ink); }
 .pickup-deliver    { background: var(--ok-bg);      color: var(--ok-ink); }
 
 .dims { font-size: .84rem; color: var(--muted); margin: 0; }
