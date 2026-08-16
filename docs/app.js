@@ -141,7 +141,11 @@ function card(item) {
     frame.append(main);
     const catName = item['category_' + lang] || item.category_en;
     if (catName) frame.append(el('span', 'cat-chip cat-' + slug(item.category_en), catName));
-    if (status === 'sold') frame.append(el('span', 'sold-stamp', t.status.sold));
+    if (status === 'sold') {
+      const stamp = el('span', 'sold-stamp');
+      stamp.append(el('span', null, t.status.sold));   // solid bar, legible over any photo
+      frame.append(stamp);
+    }
     gal.append(frame);
 
     if (photos.length > 1) {

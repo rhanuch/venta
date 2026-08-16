@@ -201,7 +201,9 @@ main {
   transition: transform .16s ease, box-shadow .16s ease;
 }
 .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); }
-.card.sold { opacity: .55; filter: saturate(.2); }
+.card.sold { border-color: var(--line); }
+.card.sold .frame > img { filter: grayscale(.85) brightness(.55); }
+.card.sold h2, .card.sold .price, .card.sold .notes, .card.sold .dims { color: var(--muted); }
 .card.sold:hover { transform: none; }
 .card.sold h2 { text-decoration: line-through; }
 
@@ -270,9 +272,14 @@ main {
 
 .sold-stamp {
   position: absolute; inset: 0; display: grid; place-items: center;
-  background: rgba(10,16,18,.55);
-  color: #fff; font-weight: 700; font-size: var(--t-xl); letter-spacing: .22em;
-  text-transform: uppercase; transform: rotate(-8deg); pointer-events: none;
+  pointer-events: none;
+}
+.sold-stamp span {
+  background: var(--bad-ink); color: var(--card);
+  font-weight: 700; font-size: var(--t-xl); letter-spacing: .2em;
+  text-transform: uppercase; padding: .3rem 1.2rem .3rem 1.4rem;
+  border-radius: 4px; transform: rotate(-6deg);
+  box-shadow: 0 6px 18px rgba(0,0,0,.45);
 }
 .thumbs {
   display: flex; gap: .3rem; padding: .4rem .4rem .1rem; overflow-x: auto;
