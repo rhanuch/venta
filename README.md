@@ -57,6 +57,24 @@ Set `photos` by hand only to override the order or use a subset, e.g.
 Drop folders into `~/Downloads/venta/` and run `./build-images.sh && git add -A &&
 git commit -m photos && git push`. Same result, just resized locally.
 
+## One-time setup: folders → Sheet rows
+
+CI can write to this repo but not to your Sheet, so a new photo folder can't add
+itself to the Sheet on its own. A small Apps Script living **inside the Sheet** closes
+that loop — after this you never open `catalog.csv` again.
+
+1. In the Sheet: **Extensions → Apps Script**
+2. Paste the contents of [`tools/sheet-sync.gs`](tools/sheet-sync.gs), Save
+3. Run `syncFolders` once and approve the permission prompt
+4. **Triggers → Add trigger →** `syncFolders` → Time-driven → every 15 minutes
+
+From then on: drop photos into `docs/images/<id>/` and within ~15 minutes a row
+appears in your Sheet with `id` and `photos` filled. Type a name and it goes live.
+A **Venta → Sync photo folders** menu also appears if you want it immediately.
+
+It skips folders already referenced by a row (all 7 plants share `plantas/`), and
+appends new photos to existing rows without reordering an existing cover shot.
+
 ## What CI does
 
 `.github/workflows/site.yml` runs on every push, every 6 hours, and on demand:
@@ -64,9 +82,12 @@ git commit -m photos && git push`. Same result, just resized locally.
 1. Compresses any photo over 1600px or 500KB and converts it to `.jpg`
 2. Regenerates `docs/images.json` (the id → photos map)
 3. Pulls the published Sheet into `catalog.csv` and `docs/catalog.csv`
-4. Runs `tools/merge-folders.py` — adds a row for any unclaimed folder and tops up
-   `photos` from what is on disk
+4. Runs `tools/merge-folders.py` — same folder-merging logic, applied to the repo's
+   backup copy so it stays a faithful snapshot
 5. Commits anything that changed and deploys to Pages
+
+`catalog.csv` is generated. **Never edit it by hand** — the Sheet is the source of
+truth and CI overwrites the file from it.
 
 The Sheet pull refuses to overwrite if it returns fewer than 5 rows, so a broken
 publish or a Google outage can't wipe the catalog.
