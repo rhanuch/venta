@@ -30,20 +30,25 @@ the Sheet every 6 hours, so the repo copy is a backup, not a source.
   items stay visible, greyed with a SOLD stamp; buyers can hide them with the toggle.
 - **Change a price**: edit `price`. `$` optional. Blank shows "Ask".
 
-## Adding an item — no laptop needed
+## Adding an item — just add photos
 
-1. On github.com open `docs/images`, **Add file → Upload files**, and drop the photos
-   into a **new folder named exactly like the item's `id`** (e.g. type `sofa/` before the
-   filename). Any size, any orientation, `.jpg` / `.png` / `.heic` all fine.
-2. Add a row in the Sheet. Set `id` to that same folder name and **leave `photos`
-   blank**.
+**A folder is an item.** Create `docs/images/sofa/` with photos in it and that's a
+listing: it appears on the site straight away with its pictures, and CI writes a
+`sofa` row into `catalog.csv` for you. Fill in the name, price and the rest in the
+Sheet whenever you get to it — **any field left blank simply isn't rendered**, so a
+photos-only item shows the photos and nothing else.
 
-That's it. Within about a minute CI will resize everything to 1600px / 80% quality,
-strip EXIF, fix rotation, rebuild `docs/images.json`, and redeploy. The site finds the
-photos by matching the folder name to the row's `id`.
+On github.com: open `docs/images` → **Add file → Upload files** → type `sofa/` before
+the filename to create the folder. Any size, any orientation, `.jpg` / `.png` /
+`.heic` all fine — CI resizes to 1600px / 80%, fixes rotation and strips EXIF.
 
-Fill `photos` explicitly only when you want a specific cover shot or a subset, e.g.
-`sofa/3.jpg,sofa/1.jpg`.
+**Adding more photos later** just means dropping them in the same folder. They are
+appended to that item's `photos`, and an existing order is never rearranged — so a
+deliberately chosen cover shot stays the cover.
+
+Set `photos` by hand only to override the order or use a subset, e.g.
+`sofa/3.jpg,sofa/1.jpg`. Folders shared by several rows (all 7 plants live in
+`plantas/`) are left alone.
 
 ### From the laptop instead
 Drop folders into `~/Downloads/venta/` and run `./build-images.sh && git add -A &&
@@ -56,7 +61,9 @@ git commit -m photos && git push`. Same result, just resized locally.
 1. Compresses any photo over 1600px or 500KB and converts it to `.jpg`
 2. Regenerates `docs/images.json` (the id → photos map)
 3. Pulls the published Sheet into `catalog.csv` and `docs/catalog.csv`
-4. Commits anything that changed and deploys to Pages
+4. Runs `tools/merge-folders.py` — adds a row for any unclaimed folder and tops up
+   `photos` from what is on disk
+5. Commits anything that changed and deploys to Pages
 
 The Sheet pull refuses to overwrite if it returns fewer than 5 rows, so a broken
 publish or a Google outage can't wipe the catalog.

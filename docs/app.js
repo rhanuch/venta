@@ -208,7 +208,7 @@ function card(item) {
 
   const body = el('div', 'body');
   const titlerow = el('div', 'titlerow');
-  titlerow.append(el('h2', null, name));
+  if (name) titlerow.append(el('h2', null, name));
   const isFree = priceNum(item.price) === 0 && item.price !== '';
   const wrap = el('span', 'pricewrap');
   wrap.append(el('span', 'price' + (isFree ? ' free' : ''), priceText(item.price)));
@@ -368,11 +368,14 @@ function render() {
       groups.get(c).push(i);
     }
     const nodes = [];
+    const loose = groups.get('') || groups.get(undefined) || [];
+    groups.delete(''); groups.delete(undefined);
     for (const [c, group] of groups) {
       const h = el('h3', 'section');
       h.append(el('span', 'section-name', c), el('span', 'section-count', group.length));
       nodes.push(h, ...group.map(card));
     }
+    nodes.push(...loose.map(card));   // no heading for rows without a category
     grid.replaceChildren(...nodes);
   } else {
     grid.replaceChildren(...list.map(card));
@@ -382,6 +385,16 @@ function render() {
 
 function boot(text) {
   items = parseCSV(text);
+
+  // A folder that no row references becomes an item on its own, so dropping
+  // photos in is enough to list something. Fill the row in later.
+  const claimed = new Set(items.flatMap(i =>
+    (i.photos || '').split(',').map(p => p.trim()).filter(Boolean)));
+  for (const [folder, files] of Object.entries(manifest)) {
+    if (items.some(i => i.id === folder)) continue;
+    if (files.some(f => claimed.has(f))) continue;
+    items.push({ id: folder, photos: files.join(','), status: 'available' });
+  }
 
   document.documentElement.lang = lang;
   document.title = t.title;
