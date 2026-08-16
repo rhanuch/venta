@@ -1,7 +1,8 @@
 // ---- config: edit these three ----------------------------------------------
-// Paste the Sheet's "publish to web -> CSV" URL here to go live-editable.
-// Until then the site serves the copy of catalog.csv committed next to it.
-const CSV_URL = './catalog.csv';
+// The Sheet, published to web as CSV. Falls back to the committed catalog.csv
+// while the Sheet is still empty — ponytail: drop the fallback once it's populated.
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRBMp9sIen6vl-hnIhpoblR27lkHKHRRDaUFIBJwiNYqaZdZySfcoHwaNhxU3h4YTEDFAEcOIHmCqRf/pub?output=csv';
+const CSV_FALLBACK = './catalog.csv';
 const PHONE = '+12066606080';        // used for both SMS and WhatsApp links
 const AREA = { en: 'Seattle, WA', es: 'Seattle, WA' };
 // ----------------------------------------------------------------------------
@@ -230,12 +231,15 @@ function boot(text) {
   render();
 }
 
+const load = url => fetch(url).then(r => {
+  if (!r.ok) throw new Error(r.status);
+  return r.text();
+});
+
 if (typeof document !== 'undefined') {
-  fetch(CSV_URL)
-    .then(r => {
-      if (!r.ok) throw new Error(r.status);
-      return r.text();
-    })
+  load(CSV_URL)
+    .then(text => (parseCSV(text).length ? text : load(CSV_FALLBACK)))
+    .catch(() => load(CSV_FALLBACK))
     .then(boot)
     .catch(() => {
       $('grid').textContent = lang === 'es'
