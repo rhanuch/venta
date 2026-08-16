@@ -30,7 +30,7 @@ const T = {
     wa: 'WhatsApp',
     smsBody: n => `Hi! I'm interested in the "${n}" from your moving sale.`,
     footer: a => `Pickup in ${a}. Venmo or cash. Message me and we'll sort out a time.`,
-    retail: p => `I paid ${p}`,
+    retail: p => `${p} new`,
     stats: (n, f) => `${n} items` + (f ? ` · ${f} free` : ''),
   },
   es: {
@@ -55,7 +55,7 @@ const T = {
     wa: 'WhatsApp',
     smsBody: n => `¡Hola! Me interesa "${n}" de tu venta por mudanza.`,
     footer: a => `Retiro en ${a}. Venmo o efectivo. Escribime y coordinamos.`,
-    retail: p => `Lo pagué ${p}`,
+    retail: p => `${p} nuevo`,
     stats: (n, f) => `${n} artículos` + (f ? ` · ${f} gratis` : ''),
   },
 };
