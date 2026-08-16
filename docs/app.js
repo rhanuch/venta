@@ -417,7 +417,11 @@ function boot(text) {
   render();
 }
 
-const load = url => fetch(url).then(r => {
+// Google's published CSV is served from a cache that lags edits by a few minutes.
+// A per-load cache-buster at least takes the browser's own cache out of the picture.
+const bust = url => url + (url.includes('?') ? '&' : '?') + 'cb=' + Date.now();
+
+const load = url => fetch(bust(url)).then(r => {
   if (!r.ok) throw new Error(r.status);
   return r.text();
 });
