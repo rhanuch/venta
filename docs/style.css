@@ -20,7 +20,7 @@
   --ok-bg: #dfe9d9;      --ok-ink: #39562f;
   --warn-bg: #f6e8cd;    --warn-ink: #7a5410;
   --bad-bg: #f5e2dd;     --bad-ink: #8b3a2c;
-  --info-bg: #e3e6ec;    --info-ink: #3f4c60;
+  --info-bg: #e6e3e6;    --info-ink: #574c56;
   --neutral-bg: #e8e2d8; --neutral-ink: #5d5346;
 }
 @media (prefers-color-scheme: dark) {
@@ -33,7 +33,7 @@
     --ok-bg: #25301d;      --ok-ink: #a9cf9b;
     --warn-bg: #352a12;    --warn-ink: #e0bd79;
     --bad-bg: #37201a;     --bad-ink: #eda595;
-    --info-bg: #232830;    --info-ink: #b3c0d2;
+    --info-bg: #2b262b;    --info-ink: #c6b8c4;
     --neutral-bg: #2a251d; --neutral-ink: #a99d8c;
   }
 }
@@ -44,7 +44,7 @@
   --shadow: 0 1px 2px rgba(0,0,0,.5), 0 8px 20px -12px rgba(0,0,0,.8);
   --shadow-lift: 0 2px 6px rgba(0,0,0,.6), 0 20px 38px -16px rgba(0,0,0,.95);
   --ok-bg: #25301d; --ok-ink: #a9cf9b; --warn-bg: #352a12; --warn-ink: #e0bd79;
-  --bad-bg: #37201a; --bad-ink: #eda595; --info-bg: #232830; --info-ink: #b3c0d2;
+  --bad-bg: #37201a; --bad-ink: #eda595; --info-bg: #2b262b; --info-ink: #c6b8c4;
   --neutral-bg: #2a251d; --neutral-ink: #a99d8c;
 }
 
@@ -67,7 +67,7 @@ body {
 }
 
 /* ---- header ---- */
-header { padding: 2.5rem 0 1.25rem; }
+header { padding: 3rem 0 1.5rem; }
 .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 h1 {
   font-family: var(--display); font-weight: 600;
@@ -141,9 +141,12 @@ input[type=search] { flex: 1 1 16rem; min-width: 10rem; }
 }
 
 /* ---- grid ---- */
+/* 3 columns on desktop, 2 on tablet, 1 on phone — the researched sweet spot.
+   More columns measurably slow scanning; masonry breaks the expected path. */
 main {
-  display: grid; gap: 1.35rem; padding-top: 1.5rem;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  display: grid; gap: 1.75rem 1.25rem; padding-top: 1.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  align-content: start;
 }
 
 .card {
@@ -175,14 +178,14 @@ main {
   background: rgba(20,25,27,.72); color: #fff;
   backdrop-filter: blur(8px); box-shadow: 0 1px 5px rgba(0,0,0,.25);
 }
-.cat-furniture   { background: #895b40; }   /* L*43 C*28 h55  */
-.cat-lighting    { background: #6d6737; }   /* L*43 C*28 h100 */
-.cat-plants      { background: #456f4a; }   /* L*43 C*28 h145 */
-.cat-outdoor     { background: #09726d; }   /* L*43 C*28 h190 */
-.cat-kitchen     { background: #006f8b; }   /* L*43 C*28 h235 */
-.cat-appliances  { background: #506593; }   /* L*43 C*28 h280 */
-.cat-wall-art    { background: #7f5980; }   /* L*43 C*28 h325 */
-.cat-home        { background: #92535f; }   /* L*43 C*28 h10  */   /* ochre  */
+.cat-home        { background: #895d5b; }   /* L*44 C*20 h25  clay   */
+.cat-furniture   { background: #7e6349; }   /* h70   wood   */
+.cat-lighting    { background: #656b4a; }   /* h115  olive  */
+.cat-plants      { background: #49705c; }   /* h160  moss   */
+.cat-outdoor     { background: #347175; }   /* h205  slate  */
+.cat-kitchen     { background: #436d87; }   /* h250  blue   */
+.cat-appliances  { background: #676586; }   /* h295  iris   */
+.cat-wall-art    { background: #825d74; }   /* h340  plum   */
 
 /* "1/4" chip + dots: the only signal a card has more than one photo */
 .photo-count {
@@ -195,7 +198,7 @@ main {
 }
 .dots {
   display: flex; justify-content: center; gap: .35rem;
-  padding: 0 0 .55rem; pointer-events: none; background: var(--card);
+  padding: .35rem 0 .6rem; pointer-events: none; background: var(--card);
 }
 .dots span {
   width: 6px; height: 6px; border-radius: 50%;
@@ -227,7 +230,7 @@ main {
   text-transform: uppercase; transform: rotate(-8deg); pointer-events: none;
 }
 .thumbs {
-  display: flex; gap: .3rem; padding: .35rem; overflow-x: auto;
+  display: flex; gap: .3rem; padding: .4rem .4rem .1rem; overflow-x: auto;
   background: var(--card);
 }
 .thumbs img {
@@ -238,7 +241,7 @@ main {
 .thumbs img:hover { border-color: var(--accent); }
 .thumbs img.on { border-color: var(--accent); border-width: 2px; }
 
-.body { padding: .9rem 1rem 1rem; display: flex; flex-direction: column; gap: .55rem; flex: 1; }
+.body { padding: 1rem 1.05rem 1.05rem; display: flex; flex-direction: column; gap: .6rem; flex: 1; }
 h2 {
   font-family: var(--display); font-weight: 600;
   font-size: 1.15rem; margin: 0; letter-spacing: -.01em; line-height: 1.25;
