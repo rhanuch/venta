@@ -131,22 +131,20 @@ function card(item) {
     main.src = 'images/' + photos[0];
     main.alt = name;
     main.loading = 'lazy';
-    main.addEventListener('click', () => {
-      $('lightboximg').src = main.src;
-      $('lightbox').showModal();
-    });
+    let shown = 0;
+    main.addEventListener('click', () => openLightbox(photos, shown, name));
     gal.append(main);
     const catName = item['category_' + lang] || item.category_en;
     if (catName) gal.append(el('span', 'cat-chip cat-' + slug(item.category_en), catName));
     if (status === 'sold') gal.append(el('span', 'sold-stamp', t.status.sold));
     if (photos.length > 1) {
       const strip = el('div', 'thumbs');
-      photos.forEach(p => {
+      photos.forEach((p, i) => {
         const th = el('img');
         th.src = 'images/' + p;
         th.alt = '';
         th.loading = 'lazy';
-        th.addEventListener('click', () => { main.src = th.src; });
+        th.addEventListener('click', () => { main.src = th.src; shown = i; });
         strip.append(th);
       });
       gal.append(strip);
@@ -190,6 +188,48 @@ function card(item) {
 
   c.append(body);
   return c;
+}
+
+// --- lightbox with prev/next: arrows, keyboard, swipe ---------------------
+let lbPhotos = [], lbIdx = 0;
+
+function lbShow(i) {
+  lbIdx = (i + lbPhotos.length) % lbPhotos.length;   // wraps both ways
+  $('lightboximg').src = 'images/' + lbPhotos[lbIdx];
+  $('lightboxcount').textContent = lbPhotos.length > 1
+    ? `${lbIdx + 1} / ${lbPhotos.length}` : '';
+  const many = lbPhotos.length > 1;
+  $('lbprev').hidden = $('lbnext').hidden = !many;
+}
+
+function openLightbox(photos, start, alt) {
+  lbPhotos = photos;
+  $('lightboximg').alt = alt || '';
+  lbShow(start || 0);
+  $('lightbox').showModal();
+}
+
+function initLightbox() {
+  const box = $('lightbox');
+  $('lbprev').addEventListener('click', e => { e.stopPropagation(); lbShow(lbIdx - 1); });
+  $('lbnext').addEventListener('click', e => { e.stopPropagation(); lbShow(lbIdx + 1); });
+  box.addEventListener('click', e => { if (e.target === box) box.close(); });
+  box.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft') { e.preventDefault(); lbShow(lbIdx - 1); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); lbShow(lbIdx + 1); }
+  });
+  // swipe: horizontal drag over ~50px, and not a vertical scroll gesture
+  let x0 = null, y0 = null;
+  box.addEventListener('touchstart', e => {
+    x0 = e.changedTouches[0].clientX; y0 = e.changedTouches[0].clientY;
+  }, { passive: true });
+  box.addEventListener('touchend', e => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    const dy = e.changedTouches[0].clientY - y0;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) lbShow(lbIdx + (dx < 0 ? 1 : -1));
+    x0 = y0 = null;
+  }, { passive: true });
 }
 
 let items = [];
@@ -246,7 +286,7 @@ function boot(text) {
   );
 
   ['q', 'cat', 'sort', 'hidesold'].forEach(id => $(id).addEventListener('input', render));
-  $('lightbox').addEventListener('click', e => { if (e.target.id === 'lightbox') $('lightbox').close(); });
+  initLightbox();
 
   render();
 }
