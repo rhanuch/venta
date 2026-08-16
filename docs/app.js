@@ -262,7 +262,13 @@ function openLightbox(photos, start, alt) {
   lbShow(start || 0);
   const box = $('lightbox');
   box.showModal();
-  box.focus();          // park focus on the dialog, not the first nav button
+  box.focus();
+  // Safari can hand focus back to a child after showModal; make sure nothing
+  // inside the dialog is left focused and drawing a ring.
+  requestAnimationFrame(() => {
+    const a = document.activeElement;
+    if (a && a !== box && box.contains(a)) { a.blur(); box.focus(); }
+  });
 
 }
 

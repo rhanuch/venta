@@ -376,7 +376,6 @@ footer {
   backdrop-filter: blur(4px); transition: background .15s ease, scale .15s ease;
 }
 .lbnav:hover span { background: rgba(0,0,0,.85); scale: 1.08; }
-.lbnav:focus-visible span { outline: 2px solid #fff; outline-offset: 2px; }
 #lbclose {
   outline: none;
   position: fixed; top: 1rem; right: 1rem; z-index: 3;
