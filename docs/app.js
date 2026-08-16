@@ -132,24 +132,27 @@ function card(item) {
     main.alt = name;
     main.loading = 'lazy';
     let shown = 0;
-    gal.append(main);
+    // Only the frame holds the photo overlays, so nav zones can't reach the thumbs.
+    const frame = el('div', 'frame');
+    frame.append(main);
     const catName = item['category_' + lang] || item.category_en;
-    if (catName) gal.append(el('span', 'cat-chip cat-' + slug(item.category_en), catName));
-    if (status === 'sold') gal.append(el('span', 'sold-stamp', t.status.sold));
+    if (catName) frame.append(el('span', 'cat-chip cat-' + slug(item.category_en), catName));
+    if (status === 'sold') frame.append(el('span', 'sold-stamp', t.status.sold));
+    gal.append(frame);
 
     if (photos.length > 1) {
       const count = el('span', 'photo-count');
+      const strip = el('div', 'thumbs');
       const dots = el('div', 'dots');
+
       const setPhoto = i => {
         shown = (i + photos.length) % photos.length;
         main.src = 'images/' + photos[shown];
         count.textContent = `${shown + 1}/${photos.length}`;
         [...dots.children].forEach((d, n) => d.classList.toggle('on', n === shown));
+        [...strip.children].forEach((th, n) => th.classList.toggle('on', n === shown));
       };
-      photos.forEach(() => dots.append(el('span')));
-      gal.append(count, dots);
 
-      const strip = el('div', 'thumbs');
       photos.forEach((p, i) => {
         const th = el('img');
         th.src = 'images/' + p;
@@ -157,15 +160,29 @@ function card(item) {
         th.loading = 'lazy';
         th.addEventListener('click', () => setPhoto(i));
         strip.append(th);
+        dots.append(el('span'));
       });
 
+      let moved = false;
+      const navBtn = (cls, glyph, step) => {
+        const b = el('button', 'cardnav ' + cls, glyph);
+        b.type = 'button';
+        b.setAttribute('aria-label', glyph === '‹' ? 'Previous photo' : 'Next photo');
+        b.addEventListener('click', e => {
+          e.stopPropagation();          // don't open the lightbox
+          if (!moved) setPhoto(shown + step);
+        });
+        return b;
+      };
+      frame.append(count, navBtn('cardprev', '‹', -1), navBtn('cardnext', '›', 1));
+
       // swipe the card photo without opening it
-      let x0 = null, y0 = null, moved = false;
-      main.addEventListener('touchstart', e => {
+      let x0 = null, y0 = null;
+      frame.addEventListener('touchstart', e => {
         moved = false;
         x0 = e.changedTouches[0].clientX; y0 = e.changedTouches[0].clientY;
       }, { passive: true });
-      main.addEventListener('touchend', e => {
+      frame.addEventListener('touchend', e => {
         if (x0 === null) return;
         const dx = e.changedTouches[0].clientX - x0;
         const dy = e.changedTouches[0].clientY - y0;
@@ -178,7 +195,7 @@ function card(item) {
       main.addEventListener('click', () => { if (!moved) openLightbox(photos, shown, name); });
 
       setPhoto(0);
-      gal.append(strip);
+      gal.append(strip, dots);          // dots on their own row, after the thumbs
     } else {
       main.addEventListener('click', () => openLightbox(photos, 0, name));
     }
