@@ -132,22 +132,55 @@ function card(item) {
     main.alt = name;
     main.loading = 'lazy';
     let shown = 0;
-    main.addEventListener('click', () => openLightbox(photos, shown, name));
     gal.append(main);
     const catName = item['category_' + lang] || item.category_en;
     if (catName) gal.append(el('span', 'cat-chip cat-' + slug(item.category_en), catName));
     if (status === 'sold') gal.append(el('span', 'sold-stamp', t.status.sold));
+
     if (photos.length > 1) {
+      const count = el('span', 'photo-count');
+      const dots = el('div', 'dots');
+      const setPhoto = i => {
+        shown = (i + photos.length) % photos.length;
+        main.src = 'images/' + photos[shown];
+        count.textContent = `${shown + 1}/${photos.length}`;
+        [...dots.children].forEach((d, n) => d.classList.toggle('on', n === shown));
+      };
+      photos.forEach(() => dots.append(el('span')));
+      gal.append(count, dots);
+
       const strip = el('div', 'thumbs');
       photos.forEach((p, i) => {
         const th = el('img');
         th.src = 'images/' + p;
         th.alt = '';
         th.loading = 'lazy';
-        th.addEventListener('click', () => { main.src = th.src; shown = i; });
+        th.addEventListener('click', () => setPhoto(i));
         strip.append(th);
       });
+
+      // swipe the card photo without opening it
+      let x0 = null, y0 = null, moved = false;
+      main.addEventListener('touchstart', e => {
+        moved = false;
+        x0 = e.changedTouches[0].clientX; y0 = e.changedTouches[0].clientY;
+      }, { passive: true });
+      main.addEventListener('touchend', e => {
+        if (x0 === null) return;
+        const dx = e.changedTouches[0].clientX - x0;
+        const dy = e.changedTouches[0].clientY - y0;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          moved = true;
+          setPhoto(shown + (dx < 0 ? 1 : -1));
+        }
+        x0 = y0 = null;
+      }, { passive: true });
+      main.addEventListener('click', () => { if (!moved) openLightbox(photos, shown, name); });
+
+      setPhoto(0);
       gal.append(strip);
+    } else {
+      main.addEventListener('click', () => openLightbox(photos, 0, name));
     }
     c.append(gal);
   }
