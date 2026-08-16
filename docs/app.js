@@ -260,7 +260,10 @@ function openLightbox(photos, start, alt) {
   lbPhotos = photos;
   $('lightboximg').alt = alt || '';
   lbShow(start || 0);
-  $('lightbox').showModal();
+  const box = $('lightbox');
+  box.showModal();
+  box.focus();          // park focus on the dialog, not the first nav button
+
 }
 
 function initLightbox() {
@@ -302,6 +305,25 @@ function initLightbox() {
     }
     x0 = y0 = null;
   }, { passive: true });
+}
+
+// The filter bar condenses on the way down and comes back on the way up,
+// so the grid keeps the screen while scrolling but filters stay one flick away.
+function initSlimBar() {
+  const bar = document.querySelector('.controls');
+  let last = window.scrollY, ticking = false;
+  const onScroll = () => {
+    const y = window.scrollY;
+    if (y < 120) bar.classList.remove('slim');
+    else if (y > last + 6) bar.classList.add('slim');
+    else if (y < last - 6) bar.classList.remove('slim');
+    last = y; ticking = false;
+  };
+  window.addEventListener('scroll', () => {
+    if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
+  }, { passive: true });
+  // never leave it condensed while someone is actually using it
+  bar.addEventListener('focusin', () => bar.classList.remove('slim'));
 }
 
 let items = [];
@@ -359,6 +381,7 @@ function boot(text) {
   );
 
   ['q', 'cat', 'sort', 'hidesold'].forEach(id => $(id).addEventListener('input', render));
+  initSlimBar();
   initLightbox();
 
   render();

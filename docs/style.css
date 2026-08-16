@@ -98,6 +98,7 @@ header p { color: var(--muted); margin: .85rem 0 0; max-width: 44rem; font-size:
 .controls {
   display: flex; flex-wrap: wrap; gap: .55rem; align-items: center;
   padding: .85rem 0; position: sticky; top: 0; z-index: 3;
+  transition: padding .22s ease;
   background: color-mix(in srgb, var(--bg) 90%, transparent);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line);
@@ -106,6 +107,19 @@ input[type=search], select {
   font: inherit; padding: .55rem .8rem; border: 1px solid var(--line);
   border-radius: 11px; background: var(--card); color: var(--ink);
   height: 2.75rem;
+  transition: height .22s ease, opacity .18s ease, font-size .22s ease;
+}
+
+/* condensed state while scrolling down */
+.controls.slim { padding: .35rem 0; }
+.controls.slim input[type=search],
+.controls.slim select,
+.controls.slim .check { height: 2.1rem; font-size: .82rem; }
+.controls.slim .check { padding: 0 .7rem; }
+@media (max-width: 560px) {
+  .controls.slim .selects, .controls.slim .check {
+    height: 0; opacity: 0; overflow: hidden; margin: 0; border: 0;
+  }
 }
 select {
   /* native arrow + our padding fought each other and clipped the label */
@@ -124,6 +138,7 @@ input[type=search] { flex: 1 1 16rem; min-width: 10rem; }
 .selects select { flex: 0 1 auto; min-width: 9.5rem; text-overflow: ellipsis; }
 
 .check {
+  transition: height .22s ease, opacity .18s ease, padding .22s ease;
   display: inline-flex; align-items: center; gap: .5rem; font-size: .88rem; font-weight: 550;
   color: var(--muted); cursor: pointer; user-select: none; white-space: nowrap;
   height: 2.75rem; padding: 0 .95rem;
@@ -303,6 +318,7 @@ footer {
 /* The dialog fills the viewport so the dark area is INSIDE it and receives
    touch/click. Sized to content, ::backdrop swallowed the swipe. */
 #lightbox {
+  outline: none;
   position: fixed; inset: 0; z-index: 50;   /* must beat the grain layer */
   border: 0; padding: 0; margin: 0;
   width: 100vw; height: 100vh; max-width: 100vw; max-height: 100vh;
@@ -316,6 +332,7 @@ footer {
 /* Whole left/right thirds navigate — the arrow is just the affordance. */
 .lbnav {
   position: fixed; top: 0; bottom: 0; left: 0; width: 32%;
+  outline: none;                      /* UA ring spans the whole zone; use the chip instead */
   border: 0; background: transparent; cursor: pointer; z-index: 2;
   display: flex; align-items: center; justify-content: flex-start;
   padding: 0 0 0 1rem; -webkit-tap-highlight-color: transparent;
@@ -330,6 +347,7 @@ footer {
 .lbnav:hover span { background: rgba(0,0,0,.85); scale: 1.08; }
 .lbnav:focus-visible span { outline: 2px solid #fff; outline-offset: 2px; }
 #lbclose {
+  outline: none;
   position: fixed; top: 1rem; right: 1rem; z-index: 3;
   width: 2.5rem; height: 2.5rem; border: 0; border-radius: 50%; cursor: pointer;
   background: rgba(0,0,0,.5); color: #fff; font-size: 1rem;
