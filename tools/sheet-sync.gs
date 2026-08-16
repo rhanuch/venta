@@ -20,17 +20,31 @@ function onOpen() {
     .addToUi();
 }
 
+/** Find the tab that actually holds the catalog, whichever one is active. */
+function catalogSheet_() {
+  var sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
+  for (var i = 0; i < sheets.length; i++) {
+    var head = sheets[i].getRange(1, 1, 1, sheets[i].getLastColumn()).getValues()[0]
+      .map(function (h) { return String(h).trim(); });
+    if (head.indexOf('id') !== -1 && head.indexOf('photos') !== -1) return sheets[i];
+  }
+  throw new Error('No tab has both an "id" and a "photos" column');
+}
+
 function syncFolders() {
-  var sheet = SpreadsheetApp.getActiveSheet();
-  var manifest = JSON.parse(UrlFetchApp.fetch(MANIFEST_URL).getContentText());
+  var sheet = catalogSheet_();
+  Logger.log('using tab: ' + sheet.getName());
+
+  var manifest = JSON.parse(UrlFetchApp.fetch(
+    MANIFEST_URL + '?cb=' + Date.now(), { muteHttpExceptions: true }).getContentText());
+  var folderCount = Object.keys(manifest).length;
+  Logger.log('manifest folders: ' + folderCount);
+  if (!folderCount) throw new Error('images.json came back empty — aborting');
 
   var values = sheet.getDataRange().getValues();
   var header = values[0].map(function (h) { return String(h).trim(); });
   var col = {};
   header.forEach(function (h, i) { col[h] = i; });
-  if (col.id === undefined || col.photos === undefined) {
-    throw new Error('Sheet needs "id" and "photos" columns');
-  }
 
   var ids = {}, claimed = {};
   for (var r = 1; r < values.length; r++) {
@@ -62,7 +76,8 @@ function syncFolders() {
     if (ids[folder]) return;
     var isClaimed = manifest[folder].some(function (f) { return claimed[f]; });
     if (isClaimed) return;               // e.g. plantas/ is shared by 7 rows
-    var row = new Array(header.length).fill('');
+    var row = [];
+    for (var i = 0; i < header.length; i++) row.push('');   // no .fill(), keeps legacy runtimes happy
     row[col.id] = folder;
     row[col.photos] = manifest[folder].join(',');
     if (col.status !== undefined) row[col.status] = 'available';
@@ -70,7 +85,12 @@ function syncFolders() {
     added++;
   });
 
-  var msg = added + ' new item(s), ' + topped + ' row(s) got new photos';
+  var msg = added + ' new item(s), ' + topped + ' row(s) got new photos'
+    + ' — tab "' + sheet.getName() + '", now ' + sheet.getLastRow() + ' rows';
   Logger.log(msg);
+  if (added) {
+    Logger.log('NOTE: new rows are appended at the bottom with a blank buyer/status '
+      + 'filter value — clear any active filter if you cannot see them.');
+  }
   try { SpreadsheetApp.getActiveSpreadsheet().toast(msg, 'Venta sync'); } catch (e) {}
 }
