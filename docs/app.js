@@ -120,7 +120,7 @@ function el(tag, cls, text) {
 }
 
 function card(item) {
-  const name = item['name_' + lang] || item.name_en;
+  const name = item['name_' + lang] || item.name_en || item.name_es;
   const notes = item['notes_' + lang] || item.notes_en;
   const status = t.status[item.status] ? item.status : 'available';
 
@@ -212,7 +212,7 @@ function card(item) {
 
   const body = el('div', 'body');
   const titlerow = el('div', 'titlerow');
-  if (name) titlerow.append(el('h2', null, name));
+  titlerow.append(el('h2', null, name));
   const isFree = priceNum(item.price) === 0 && item.price !== '';
   const wrap = el('span', 'pricewrap');
   wrap.append(el('span', 'price' + (isFree ? ' free' : ''), priceText(item.price)));
@@ -388,17 +388,10 @@ function render() {
 }
 
 function boot(text) {
-  items = parseCSV(text);
-
-  // A folder that no row references becomes an item on its own, so dropping
-  // photos in is enough to list something. Fill the row in later.
-  const claimed = new Set(items.flatMap(i =>
-    (i.photos || '').split(',').map(p => p.trim()).filter(Boolean)));
-  for (const [folder, files] of Object.entries(manifest)) {
-    if (items.some(i => i.id === folder)) continue;
-    if (files.some(f => claimed.has(f))) continue;
-    items.push({ id: folder, photos: files.join(','), status: 'available' });
-  }
+  // A row with no name in either language is a placeholder CI created from a
+  // photo folder — it stays out of the page until it has been named.
+  items = parseCSV(text)
+    .filter(i => (i.name_en || '').trim() || (i.name_es || '').trim());
 
   document.documentElement.lang = lang;
   document.title = t.title;

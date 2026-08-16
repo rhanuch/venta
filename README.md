@@ -32,11 +32,14 @@ the Sheet every 6 hours, so the repo copy is a backup, not a source.
 
 ## Adding an item — just add photos
 
-**A folder is an item.** Create `docs/images/sofa/` with photos in it and that's a
-listing: it appears on the site straight away with its pictures, and CI writes a
-`sofa` row into `catalog.csv` for you. Fill in the name, price and the rest in the
-Sheet whenever you get to it — **any field left blank simply isn't rendered**, so a
-photos-only item shows the photos and nothing else.
+**A folder starts an item.** Create `docs/images/sofa/` with photos in it and CI
+writes a `sofa` row into `catalog.csv`, with the photos already filled in. Add the
+row to the Sheet and give it a name — **an item with no `name_en` and no `name_es`
+stays off the page entirely**, so half-finished listings never go public.
+
+Once it has a name it renders, and **every other blank field is simply skipped**: no
+price shows "Ask", no category means no section heading, no condition means no badge.
+Filling only one language is fine — the other falls back to it.
 
 On github.com: open `docs/images` → **Add file → Upload files** → type `sofa/` before
 the filename to create the folder. Any size, any orientation, `.jpg` / `.png` /
