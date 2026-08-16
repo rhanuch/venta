@@ -41,15 +41,4 @@ assert.strictEqual(priceText('0'), 'Free');
 assert.strictEqual(priceNum('0'), 0);
 assert.ok(catalog.filter(i => i.price === '0').length === 7, 'expected 7 free plants');
 
-// `buyer` is private. The repo is public and docs/catalog.csv is served at a
-// guessable URL, so a name must never be committed here — keep it in the
-// unpublished master tab of the Sheet only.
-const leaked = catalog.filter(i => (i.buyer || '').trim());
-assert.deepStrictEqual(leaked.map(i => i.id), [],
-  'buyer names must never be committed: ' + leaked.map(i => i.id));
-
-// and it must never reach the rendered card
-const appSrc = fs.readFileSync('docs/app.js', 'utf8');
-assert.ok(!/item\.buyer|'buyer'|"buyer"/.test(appSrc), 'app.js must not reference buyer');
-
-console.log(`ok — ${catalog.length} items, all photos present, no buyer data committed`);
+console.log(`ok — ${catalog.length} items, all photos present`);

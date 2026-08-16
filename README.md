@@ -32,38 +32,17 @@ Sheet: https://docs.google.com/spreadsheets/d/1BVJGFqgG3MaGtp2I7XL0bQHBQ9U_6WRP7
 - **Add an item**: add its photos, run the script, then add a row in the Sheet with
   `photos` pointing at the new files (e.g. `sofa/1.jpg,sofa/2.jpg`).
 
-## Keeping `buyer` private
-
-The Sheet is published to the web and the CSV URL sits in `docs/app.js`, so
-**anything on the published tab is public**, whether or not the site draws it.
-To track who each item is going to without exposing it:
-
-1. In the Sheet, add a **`buyer`** column to your existing tab and rename that
-   tab **`Catalog`**. This is your private master — edit only here.
-2. Add a second tab named **`web`**, and put this in its cell A1:
-
-   ```
-   =QUERY(Catalog!A:P, "select A,B,C,D,E,F,G,H,I,J,K,L,M,N,O", 1)
-   ```
-
-   That mirrors every column except `buyer` (column P), and updates live.
-3. `File → Share → Publish to web` → select the **`web`** tab (not "Entire
-   document") → **Comma-separated values (.csv)** → Publish.
-4. Put that new URL in `CSV_URL` at the top of `docs/app.js`.
-
-Now `buyer` exists only on the unpublished tab. `node test.js` fails if a buyer
-name is ever committed to this repo, since `docs/catalog.csv` is public too.
-
 ## Column reference
 
 | column | values |
 | --- | --- |
-| `condition` | `new` `like_new` `good` `fair` |
+| `condition` | `new` `like_new` `very_good` `good` `fair` — blank shows no badge |
 | `status` | `available` `pending` `sold` |
 | `pickup` | `pickup` `coordinate` `deliver` |
 | `size_label` | `small` `medium` `large` (fallback when `dimensions_cm` is blank) |
 | `photos` | comma-separated paths under `docs/images/`, first one is the cover |
-| `buyer` | private — who it is going to. Never published, never rendered. |
+| `retail` | what it cost new; renders as struck-through "$X new". Blank hides it. |
+| `buyer` | who the item is going to. Ignored by the site — for your own tracking. |
 
 ## Language
 
