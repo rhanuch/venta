@@ -10,7 +10,7 @@ const AREA = { en: 'Seattle, WA', es: 'Seattle, WA' };
 const T = {
   en: {
     title: 'Moving Sale',
-    intro: "I'm moving countries, so everything below has to go. Prices are as listed. Message me about anything you want.",
+    intro: "I'm moving back to Chile and I have to sell some of my stuff. All prices are negotiable — please share with your friends if you can! — Rodrigo",
     payment: 'Venmo or cash',
     updated: d => 'Updated ' + d,
     other: 'Español',
@@ -34,7 +34,7 @@ const T = {
   },
   es: {
     title: 'Venta por mudanza',
-    intro: 'Me mudo de país, así que todo esto tiene que salir. Los precios son los publicados. Escribime por lo que te interese.',
+    intro: 'Me vuelvo a Chile y tengo que vender algunas de mis cosas. Todos los precios son negociables — ¡compartilo con tus amigos si podés! — Rodrigo',
     payment: 'Venmo o efectivo',
     updated: d => 'Actualizado ' + d,
     other: 'English',
