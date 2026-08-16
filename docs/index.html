@@ -9,7 +9,7 @@
 <meta property="og:description" content="Everything must go — furniture, kitchen, plants and more.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="images/comoda/1.jpg">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 
@@ -19,14 +19,16 @@
     <a id="langlink" class="lang" href="?lang=es">Español</a>
   </div>
   <p id="intro"></p>
-  <p class="meta"><span id="payment"></span> · <span id="updated"></span></p>
+  <p class="meta"><span id="payment"></span><span id="updated"></span><span id="stats"></span></p>
 </header>
 
 <div class="controls">
   <input type="search" id="q" placeholder="Search">
-  <select id="cat"></select>
-  <select id="sort"></select>
-  <label class="check"><input type="checkbox" id="hidesold"> <span id="hidesoldlabel"></span></label>
+  <div class="selects">
+    <select id="cat"></select>
+    <select id="sort"></select>
+  </div>
+  <label class="check"><input type="checkbox" id="hidesold"><span id="hidesoldlabel"></span></label>
 </div>
 
 <main id="grid"></main>
@@ -36,6 +38,6 @@
 
 <dialog id="lightbox"><img id="lightboximg" alt=""></dialog>
 
-<script src="app.js"></script>
+<script src="app.js?v=3"></script>
 </body>
 </html>

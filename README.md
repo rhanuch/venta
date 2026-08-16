@@ -1,5 +1,7 @@
 # Moving sale site
 
+**Live site: https://rhanuch.github.io/venta/** — Spanish: https://rhanuch.github.io/venta/?lang=es
+
 Static page on GitHub Pages. All item data lives in a Google Sheet published as CSV,
 so changing a price or marking something sold takes one cell edit and no redeploy.
 

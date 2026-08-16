@@ -30,6 +30,7 @@ const T = {
     wa: 'WhatsApp',
     smsBody: n => `Hi! I'm interested in the "${n}" from your moving sale.`,
     footer: a => `Pickup in ${a}. Venmo or cash. Message me and we'll sort out a time.`,
+    stats: (n, f) => `${n} items` + (f ? ` · ${f} free` : ''),
   },
   es: {
     title: 'Venta por mudanza',
@@ -53,6 +54,7 @@ const T = {
     wa: 'WhatsApp',
     smsBody: n => `¡Hola! Me interesa "${n}" de tu venta por mudanza.`,
     footer: a => `Retiro en ${a}. Venmo o efectivo. Escribime y coordinamos.`,
+    stats: (n, f) => `${n} artículos` + (f ? ` · ${f} gratis` : ''),
   },
 };
 
@@ -104,6 +106,8 @@ function priceText(p) {
   return /^[$]/.test(p) ? p : '$' + p;
 }
 
+const slug = s => (s || '').toLowerCase().replace(/[^a-z]+/g, '-');
+
 function el(tag, cls, text) {
   const n = document.createElement(tag);
   if (cls) n.className = cls;
@@ -130,6 +134,9 @@ function card(item) {
       $('lightbox').showModal();
     });
     gal.append(main);
+    const catName = item['category_' + lang] || item.category_en;
+    if (catName) gal.append(el('span', 'cat-chip cat-' + slug(item.category_en), catName));
+    if (status === 'sold') gal.append(el('span', 'sold-stamp', t.status.sold));
     if (photos.length > 1) {
       const strip = el('div', 'thumbs');
       photos.forEach(p => {
@@ -221,6 +228,8 @@ function boot(text) {
   $('updated').textContent = t.updated(
     new Date().toLocaleDateString(lang === 'es' ? 'es' : 'en', { day: 'numeric', month: 'short' })
   );
+  const live = items.filter(i => i.status !== 'sold');
+  $('stats').textContent = t.stats(live.length, live.filter(i => i.price === '0').length);
 
   const cats = [...new Set(items.map(i => i['category_' + lang] || i.category_en).filter(Boolean))].sort();
   $('cat').replaceChildren(
