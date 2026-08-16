@@ -211,23 +211,41 @@ function openLightbox(photos, start, alt) {
 
 function initLightbox() {
   const box = $('lightbox');
-  $('lbprev').addEventListener('click', e => { e.stopPropagation(); lbShow(lbIdx - 1); });
-  $('lbnext').addEventListener('click', e => { e.stopPropagation(); lbShow(lbIdx + 1); });
-  box.addEventListener('click', e => { if (e.target === box) box.close(); });
+  // A swipe is followed by a synthetic click on whatever was under the finger.
+  // Without this guard, swiping over a nav zone advances twice.
+  let swiped = false;
+  const onTap = fn => e => {
+    e.stopPropagation();
+    if (swiped) return;
+    fn();
+  };
+
+  $('lbprev').addEventListener('click', onTap(() => lbShow(lbIdx - 1)));
+  $('lbnext').addEventListener('click', onTap(() => lbShow(lbIdx + 1)));
+  $('lbclose').addEventListener('click', onTap(() => box.close()));
+  box.addEventListener('click', e => {
+    if (swiped) return;
+    if (e.target === box || e.target === $('lightboximg')) box.close();
+  });
   box.addEventListener('keydown', e => {
     if (e.key === 'ArrowLeft') { e.preventDefault(); lbShow(lbIdx - 1); }
     if (e.key === 'ArrowRight') { e.preventDefault(); lbShow(lbIdx + 1); }
   });
+
   // swipe: horizontal drag over ~50px, and not a vertical scroll gesture
   let x0 = null, y0 = null;
   box.addEventListener('touchstart', e => {
+    swiped = false;
     x0 = e.changedTouches[0].clientX; y0 = e.changedTouches[0].clientY;
   }, { passive: true });
   box.addEventListener('touchend', e => {
     if (x0 === null) return;
     const dx = e.changedTouches[0].clientX - x0;
     const dy = e.changedTouches[0].clientY - y0;
-    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) lbShow(lbIdx + (dx < 0 ? 1 : -1));
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+      swiped = true;
+      lbShow(lbIdx + (dx < 0 ? 1 : -1));
+    }
     x0 = y0 = null;
   }, { passive: true });
 }

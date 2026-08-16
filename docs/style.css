@@ -226,16 +226,30 @@ footer {
 #lightbox::backdrop { background: rgba(0,0,0,.82); backdrop-filter: blur(3px); }
 #lightbox img { max-width: 92vw; max-height: 92vh; display: block; border-radius: 10px; }
 #lightbox[open] { display: flex; align-items: center; justify-content: center; }
+/* Whole left/right thirds navigate — the arrow is just the affordance. */
 .lbnav {
-  position: fixed; top: 50%; translate: 0 -50%; left: 1rem;
-  width: 3rem; height: 3rem; border: 0; border-radius: 50%; cursor: pointer;
-  background: rgba(0,0,0,.55); color: #fff; font-size: 1.9rem; line-height: 1;
-  display: grid; place-items: center; padding: 0 .15rem .2rem 0;
-  backdrop-filter: blur(4px);
+  position: fixed; top: 0; bottom: 0; left: 0; width: 32%;
+  border: 0; background: transparent; cursor: pointer; z-index: 2;
+  display: flex; align-items: center; justify-content: flex-start;
+  padding: 0 0 0 1rem; -webkit-tap-highlight-color: transparent;
 }
-.lbnav.lbnext { left: auto; right: 1rem; padding: 0 0 .2rem .15rem; }
-.lbnav:hover { background: rgba(0,0,0,.8); }
-.lbnav:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.lbnav.lbnext { left: auto; right: 0; justify-content: flex-end; padding: 0 1rem 0 0; }
+.lbnav span {
+  width: 3rem; height: 3rem; border-radius: 50%;
+  background: rgba(0,0,0,.5); color: #fff; font-size: 1.9rem; line-height: 1;
+  display: grid; place-items: center; padding-bottom: .2rem;
+  backdrop-filter: blur(4px); transition: background .15s ease, scale .15s ease;
+}
+.lbnav:hover span { background: rgba(0,0,0,.85); scale: 1.08; }
+.lbnav:focus-visible span { outline: 2px solid #fff; outline-offset: 2px; }
+#lbclose {
+  position: fixed; top: 1rem; right: 1rem; z-index: 3;
+  width: 2.5rem; height: 2.5rem; border: 0; border-radius: 50%; cursor: pointer;
+  background: rgba(0,0,0,.5); color: #fff; font-size: 1rem;
+  display: grid; place-items: center; backdrop-filter: blur(4px);
+}
+#lbclose:hover { background: rgba(0,0,0,.85); }
+#lbclose:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 #lightboxcount {
   position: fixed; bottom: 1.25rem; left: 50%; translate: -50% 0;
   color: #fff; font-size: .8rem; font-variant-numeric: tabular-nums;
