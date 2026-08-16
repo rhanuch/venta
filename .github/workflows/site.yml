@@ -28,21 +28,25 @@ jobs:
 
       - name: Optimise any oversized or non-jpg photos
         run: |
+          set -euo pipefail
           shopt -s nullglob nocaseglob globstar
-          changed=0
+          # ImageMagick 7 ships `magick`; Ubuntu still packages 6, which has
+          # `convert`/`identify`. Pick whichever exists and fail loudly if neither.
+          if command -v magick >/dev/null; then IM="magick"; ID="magick identify";
+          elif command -v convert >/dev/null; then IM="convert"; ID="identify";
+          else echo "::error::no ImageMagick on the runner"; exit 1; fi
+          echo "using $IM"
           for f in docs/images/**/*.{jpg,jpeg,png,heic,webp}; do
             [ -f "$f" ] || continue
             out="${f%.*}.jpg"
-            w=$(identify -format '%w' "$f[0]" 2>/dev/null || echo 0)
+            w=$($ID -format '%w' "$f[0]" 2>/dev/null || echo 0)
             bytes=$(stat -c%s "$f")
             if [ "$w" -gt 1600 ] || [ "$bytes" -gt 500000 ] || [ "$f" != "$out" ]; then
               echo "optimising $f (${w}px, ${bytes}b)"
-              magick "$f[0]" -auto-orient -resize '1600x1600>' -quality 80 -strip "$out" || continue
+              $IM "$f[0]" -auto-orient -resize '1600x1600>' -quality 80 -strip "$out"
               [ "$f" != "$out" ] && rm -f "$f"
-              changed=1
             fi
           done
-          echo "changed=$changed" >> "$GITHUB_ENV"
 
       - name: Rebuild the photo manifest
         run: |
@@ -54,7 +58,8 @@ jobs:
           for d in sorted(os.listdir(base)):
               p = os.path.join(base, d)
               if not os.path.isdir(p): continue
-              files = sorted((f for f in os.listdir(p) if f.lower().endswith('.jpg')), key=natural)
+              ok = ('.jpg', '.jpeg', '.png', '.webp')
+              files = sorted((f for f in os.listdir(p) if f.lower().endswith(ok)), key=natural)
               if files: m[d] = [f'{d}/{f}' for f in files]
           json.dump(m, open('docs/images.json', 'w'), indent=0, sort_keys=True)
           print(len(m), 'folders,', sum(len(v) for v in m.values()), 'photos')
