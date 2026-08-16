@@ -30,6 +30,7 @@ const T = {
     wa: 'WhatsApp',
     smsBody: n => `Hi! I'm interested in the "${n}" from your moving sale.`,
     footer: a => `Pickup in ${a}. Venmo or cash. Message me and we'll sort out a time.`,
+    retail: p => `I paid ${p}`,
     stats: (n, f) => `${n} items` + (f ? ` · ${f} free` : ''),
   },
   es: {
@@ -54,6 +55,7 @@ const T = {
     wa: 'WhatsApp',
     smsBody: n => `¡Hola! Me interesa "${n}" de tu venta por mudanza.`,
     footer: a => `Retiro en ${a}. Venmo o efectivo. Escribime y coordinamos.`,
+    retail: p => `Lo pagué ${p}`,
     stats: (n, f) => `${n} artículos` + (f ? ` · ${f} gratis` : ''),
   },
 };
@@ -169,7 +171,10 @@ function card(item) {
 
   const foot = el('div', 'foot');
   const isFree = priceNum(item.price) === 0 && item.price !== '';
-  foot.append(el('span', 'price' + (isFree ? ' free' : ''), priceText(item.price)));
+  const wrap = el('span', 'pricewrap');
+  wrap.append(el('span', 'price' + (isFree ? ' free' : ''), priceText(item.price)));
+  if (item.retail) wrap.append(el('span', 'retail', t.retail(priceText(item.retail))));
+  foot.append(wrap);
   if (status !== 'sold') {
     const msg = encodeURIComponent(t.smsBody(name));
     const sms = el('a', 'btn', t.sms);
