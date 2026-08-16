@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moving Sale</title>
+<meta name="description" content="Everything must go — furniture, kitchen, plants and more.">
+<meta property="og:title" content="Moving Sale">
+<meta property="og:description" content="Everything must go — furniture, kitchen, plants and more.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="images/comoda/1.jpg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <h1 id="title">Moving Sale</h1>
+    <a id="langlink" class="lang" href="?lang=es">Español</a>
+  </div>
+  <p id="intro"></p>
+  <p class="meta"><span id="payment"></span> · <span id="updated"></span></p>
+</header>
+
+<div class="controls">
+  <input type="search" id="q" placeholder="Search">
+  <select id="cat"></select>
+  <select id="sort"></select>
+  <label class="check"><input type="checkbox" id="hidesold"> <span id="hidesoldlabel"></span></label>
+</div>
+
+<main id="grid"></main>
+<p id="empty" class="empty" hidden></p>
+
+<footer id="footer"></footer>
+
+<dialog id="lightbox"><img id="lightboximg" alt=""></dialog>
+
+<script src="app.js"></script>
+</body>
+</html>
