@@ -35,4 +35,10 @@ const missing = catalog
   .filter(p => !fs.existsSync('docs/images/' + p));
 assert.deepStrictEqual(missing, [], 'missing images: ' + missing);
 
+
+// free items render as Free, not $0
+assert.strictEqual(priceText('0'), 'Free');
+assert.strictEqual(priceNum('0'), 0);
+assert.ok(catalog.filter(i => i.price === '0').length === 7, 'expected 7 free plants');
+
 console.log(`ok — ${catalog.length} items, all photos present`);

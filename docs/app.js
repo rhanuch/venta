@@ -25,6 +25,7 @@ const T = {
     pickup: { pickup: 'Pickup only', coordinate: 'Can coordinate', deliver: 'Can deliver' },
     size: { small: 'Small', medium: 'Medium', large: 'Large' },
     ask: 'Ask',
+    free: 'Free',
     sms: 'Text',
     wa: 'WhatsApp',
     smsBody: n => `Hi! I'm interested in the "${n}" from your moving sale.`,
@@ -47,6 +48,7 @@ const T = {
     pickup: { pickup: 'Retiro en domicilio', coordinate: 'A coordinar', deliver: 'Puedo llevarlo' },
     size: { small: 'Chico', medium: 'Mediano', large: 'Grande' },
     ask: 'Consultar',
+    free: 'Gratis',
     sms: 'Mensaje',
     wa: 'WhatsApp',
     smsBody: n => `¡Hola! Me interesa "${n}" de tu venta por mudanza.`,
@@ -98,6 +100,7 @@ function priceNum(p) {
 
 function priceText(p) {
   if (!p) return t.ask;
+  if (priceNum(p) === 0) return t.free;
   return /^[$]/.test(p) ? p : '$' + p;
 }
 
@@ -147,8 +150,10 @@ function card(item) {
 
   const badges = el('div', 'badges');
   badges.append(el('span', 'badge status-' + status, t.status[status]));
-  if (t.condition[item.condition]) badges.append(el('span', 'badge', t.condition[item.condition]));
-  if (t.pickup[item.pickup]) badges.append(el('span', 'badge', t.pickup[item.pickup]));
+  if (t.condition[item.condition])
+    badges.append(el('span', 'badge cond-' + item.condition, t.condition[item.condition]));
+  if (t.pickup[item.pickup])
+    badges.append(el('span', 'badge pickup-' + item.pickup, t.pickup[item.pickup]));
   body.append(badges);
 
   const size = item.dimensions_cm ? dimensions(item.dimensions_cm) : t.size[item.size_label];
@@ -156,7 +161,8 @@ function card(item) {
   if (notes) body.append(el('p', 'notes', notes));
 
   const foot = el('div', 'foot');
-  foot.append(el('span', 'price', priceText(item.price)));
+  const isFree = priceNum(item.price) === 0 && item.price !== '';
+  foot.append(el('span', 'price' + (isFree ? ' free' : ''), priceText(item.price)));
   if (status !== 'sold') {
     const msg = encodeURIComponent(t.smsBody(name));
     const sms = el('a', 'btn', t.sms);
