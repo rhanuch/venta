@@ -132,8 +132,8 @@ main {
 .card.sold:hover { transform: none; }
 .card.sold h2 { text-decoration: line-through; }
 
-.gallery { background: var(--bg2); }
-.frame { position: relative; overflow: hidden; }
+.gallery { background: var(--card); }
+.frame { position: relative; overflow: hidden; background: var(--bg2); }
 .frame > img {
   width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; cursor: zoom-in;
   transition: transform .35s cubic-bezier(.2,.7,.3,1);
@@ -170,7 +170,7 @@ main {
 }
 .dots {
   display: flex; justify-content: center; gap: .35rem;
-  padding: 0 0 .55rem; pointer-events: none;
+  padding: 0 0 .55rem; pointer-events: none; background: var(--card);
 }
 .dots span {
   width: 6px; height: 6px; border-radius: 50%;
@@ -203,7 +203,7 @@ main {
 }
 .thumbs {
   display: flex; gap: .3rem; padding: .35rem; overflow-x: auto;
-  background: var(--card); border-top: 1px solid var(--line);
+  background: var(--card);
 }
 .thumbs img {
   width: 46px; height: 46px; object-fit: cover; border-radius: 7px;
