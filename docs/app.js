@@ -126,7 +126,9 @@ function card(item) {
 
   const c = el('article', 'card' + (status === 'sold' ? ' sold' : ''));
 
-  const photos = (item.photos || '').split(',').map(s => s.trim()).filter(Boolean);
+  // explicit `photos` wins; otherwise use every photo in the folder named after the id
+  const listed = (item.photos || '').split(',').map(s => s.trim()).filter(Boolean);
+  const photos = listed.length ? listed : (manifest[item.id] || []);
   if (photos.length) {
     const gal = el('div', 'gallery');
     const main = el('img');
@@ -333,6 +335,7 @@ function initSlimBar() {
 }
 
 let items = [];
+let manifest = {};   // id -> ["id/1.jpg", ...], built in CI from docs/images/
 
 function render() {
   const q = $('q').value.trim().toLowerCase();
@@ -420,7 +423,12 @@ const load = url => fetch(url).then(r => {
 });
 
 if (typeof document !== 'undefined') {
-  load(CSV_URL)
+  // missing manifest is fine — rows with an explicit `photos` value still work
+  const manifestReady = load('images.json')
+    .then(t => { manifest = JSON.parse(t); })
+    .catch(() => {});
+
+  manifestReady.then(() => load(CSV_URL)
     .then(text => (parseCSV(text).length ? text : load(CSV_FALLBACK)))
     .catch(() => load(CSV_FALLBACK))
     .then(boot)
@@ -428,7 +436,7 @@ if (typeof document !== 'undefined') {
       $('grid').textContent = lang === 'es'
         ? 'No se pudo cargar el catálogo. Recargá la página.'
         : "Couldn't load the catalog. Try reloading.";
-    });
+    }));
 } else {
   module.exports = { parseCSV, dimensions, priceNum, priceText };
 }

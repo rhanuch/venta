@@ -20,17 +20,46 @@ Sheet: https://docs.google.com/spreadsheets/d/1BVJGFqgG3MaGtp2I7XL0bQHBQ9U_6WRP7
 5. **Turn on Pages** — repo `Settings → Pages → Source: Deploy from a branch`,
    branch `main`, folder `/docs`.
 
-## Day to day
+## Day to day — everything lives in the Sheet
 
-- **Mark something sold**: set its `status` cell to `sold`. Also `pending` (reserved) or
-  `available`. Sold items stay visible, greyed out and struck through — buyers can hide
-  them with the toggle.
-- **Change a price**: edit the `price` cell. `$` optional. Blank shows "Ask".
-- **Add / remove / replace photos**: edit the folders under `~/Downloads/venta`, then
-  `./build-images.sh && git add -A && git commit -m photos && git push`. The script
-  rebuilds `docs/images` from scratch every time, so it handles all three cases.
-- **Add an item**: add its photos, run the script, then add a row in the Sheet with
-  `photos` pointing at the new files (e.g. `sofa/1.jpg,sofa/2.jpg`).
+Prices, status, descriptions, conditions: **edit the Sheet, that's it.** Changes are
+live on the next page load. Never edit `catalog.csv` by hand — CI overwrites it from
+the Sheet every 6 hours, so the repo copy is a backup, not a source.
+
+- **Mark something sold**: set `status` to `sold` (or `pending`, or `available`). Sold
+  items stay visible, greyed with a SOLD stamp; buyers can hide them with the toggle.
+- **Change a price**: edit `price`. `$` optional. Blank shows "Ask".
+
+## Adding an item — no laptop needed
+
+1. On github.com open `docs/images`, **Add file → Upload files**, and drop the photos
+   into a **new folder named exactly like the item's `id`** (e.g. type `sofa/` before the
+   filename). Any size, any orientation, `.jpg` / `.png` / `.heic` all fine.
+2. Add a row in the Sheet. Set `id` to that same folder name and **leave `photos`
+   blank**.
+
+That's it. Within about a minute CI will resize everything to 1600px / 80% quality,
+strip EXIF, fix rotation, rebuild `docs/images.json`, and redeploy. The site finds the
+photos by matching the folder name to the row's `id`.
+
+Fill `photos` explicitly only when you want a specific cover shot or a subset, e.g.
+`sofa/3.jpg,sofa/1.jpg`.
+
+### From the laptop instead
+Drop folders into `~/Downloads/venta/` and run `./build-images.sh && git add -A &&
+git commit -m photos && git push`. Same result, just resized locally.
+
+## What CI does
+
+`.github/workflows/site.yml` runs on every push, every 6 hours, and on demand:
+
+1. Compresses any photo over 1600px or 500KB and converts it to `.jpg`
+2. Regenerates `docs/images.json` (the id → photos map)
+3. Pulls the published Sheet into `catalog.csv` and `docs/catalog.csv`
+4. Commits anything that changed and deploys to Pages
+
+The Sheet pull refuses to overwrite if it returns fewer than 5 rows, so a broken
+publish or a Google outage can't wipe the catalog.
 
 ## Column reference
 

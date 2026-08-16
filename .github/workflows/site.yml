@@ -1,0 +1,96 @@
+name: Build and deploy site
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 */6 * * *"   # pull the Sheet in a few times a day
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # ubuntu-latest is 24.04, which no longer ships ImageMagick
+      - name: Install ImageMagick
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick libheif1
+
+      - name: Optimise any oversized or non-jpg photos
+        run: |
+          shopt -s nullglob nocaseglob globstar
+          changed=0
+          for f in docs/images/**/*.{jpg,jpeg,png,heic,webp}; do
+            [ -f "$f" ] || continue
+            out="${f%.*}.jpg"
+            w=$(identify -format '%w' "$f[0]" 2>/dev/null || echo 0)
+            bytes=$(stat -c%s "$f")
+            if [ "$w" -gt 1600 ] || [ "$bytes" -gt 500000 ] || [ "$f" != "$out" ]; then
+              echo "optimising $f (${w}px, ${bytes}b)"
+              magick "$f[0]" -auto-orient -resize '1600x1600>' -quality 80 -strip "$out" || continue
+              [ "$f" != "$out" ] && rm -f "$f"
+              changed=1
+            fi
+          done
+          echo "changed=$changed" >> "$GITHUB_ENV"
+
+      - name: Rebuild the photo manifest
+        run: |
+          python3 - <<'PY'
+          import os, json, re
+          base = 'docs/images'
+          natural = lambda n: [int(t) if t.isdigit() else t.lower() for t in re.split(r'(\d+)', n)]
+          m = {}
+          for d in sorted(os.listdir(base)):
+              p = os.path.join(base, d)
+              if not os.path.isdir(p): continue
+              files = sorted((f for f in os.listdir(p) if f.lower().endswith('.jpg')), key=natural)
+              if files: m[d] = [f'{d}/{f}' for f in files]
+          json.dump(m, open('docs/images.json', 'w'), indent=0, sort_keys=True)
+          print(len(m), 'folders,', sum(len(v) for v in m.values()), 'photos')
+          PY
+
+      - name: Pull the catalog from the published Sheet
+        run: |
+          URL=$(grep -oE "https://docs\.google\.com/[^']+" docs/app.js | head -1)
+          echo "fetching $URL"
+          curl -sL --fail "$URL" -o /tmp/sheet.csv || { echo "sheet fetch failed, keeping committed copy"; exit 0; }
+          rows=$(tail -n +2 /tmp/sheet.csv | wc -l)
+          if [ "$rows" -lt 5 ]; then
+            echo "sheet returned only $rows rows — refusing to overwrite"; exit 0
+          fi
+          cp /tmp/sheet.csv catalog.csv
+          cp /tmp/sheet.csv docs/catalog.csv
+          echo "synced $rows rows"
+
+      - name: Commit anything that changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --staged --quiet || git commit -m "chore: optimise photos + sync catalog [skip ci]"
+          git push
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
