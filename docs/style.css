@@ -4,6 +4,16 @@
    (deliberately NOT the cream+terracotta default). Contrast audited both themes. */
 :root {
   --display: ui-serif, Georgia, "Iowan Old Style", "Times New Roman", serif;
+  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* one scale, ~1.125 steps. Serif names things; sans carries data and controls. */
+  --t-2xs: .6875rem;   /* 11px  badges, chips, counters */
+  --t-xs:  .75rem;     /* 12px  struck-through retail   */
+  --t-sm:  .8125rem;   /* 13px  meta, dims, buttons     */
+  --t-base: .9375rem;  /* 15px  notes, form controls    */
+  --t-md:  1.0625rem;  /* 17px  intro, trust line       */
+  --t-lg:  1.1875rem;  /* 19px  item title              */
+  --t-xl:  1.375rem;   /* 22px  price                   */
+  --icon-md: 1.6rem; --icon-lg: 1.9rem;   /* nav glyphs, not text */
   --bg: #efeae1;
   --bg2: #e4ddd1;
   --card: #fdfbf7;
@@ -62,7 +72,7 @@ body {
   padding: 0 1rem 4rem;
   background: var(--bg);
   color: var(--ink);
-  font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font: 400 16px/1.6 var(--sans);
   max-width: 1140px;
 }
 
@@ -70,27 +80,27 @@ body {
 header { padding: 3rem 0 1.5rem; }
 .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 h1 {
-  font-family: var(--display); font-weight: 600;
-  font-size: clamp(2rem, 5.5vw, 2.9rem); margin: 0; line-height: 1.02;
-  letter-spacing: -.025em; color: var(--ink); text-wrap: balance;
+  font-family: var(--display); font-weight: 400;
+  font-size: clamp(2rem, 5.5vw, 2.9rem); margin: 0; line-height: 1.05;
+  letter-spacing: -.02em; color: var(--ink); text-wrap: balance;
 }
 .lang {
-  color: var(--ink); text-decoration: none; font-size: .85rem; font-weight: 600;
+  color: var(--ink); text-decoration: none; font-size: var(--t-sm); font-weight: 600;
   border: 1px solid var(--line); border-radius: 999px; padding: .35rem .85rem;
   background: var(--card); box-shadow: var(--shadow); white-space: nowrap;
   transition: transform .12s ease, box-shadow .12s ease;
 }
 .lang:hover { transform: translateY(-1px); box-shadow: var(--shadow-lift); }
-header p { color: var(--muted); margin: .85rem 0 0; max-width: 44rem; font-size: 1.02rem; }
+#intro { color: var(--muted); margin: .9rem 0 0; max-width: 42rem; font-size: var(--t-md); }
 .trust {
-  font-size: .92rem !important; color: var(--ink) !important;
-  border-left: 3px solid var(--accent); padding-left: .75rem;
-  margin: 1rem 0 0 !important;
+  font-size: var(--t-md); color: var(--ink);
+  border-left: 3px solid var(--accent); padding-left: .8rem;
+  margin: 1.1rem 0 0;
 }
-.meta { font-size: .85rem !important; display: flex; gap: .45rem; flex-wrap: wrap; }
+.meta { font-size: var(--t-sm); display: flex; gap: .45rem; flex-wrap: wrap; margin: 1.1rem 0 0; }
 .meta span {
   background: var(--card); border: 1px solid var(--line); border-radius: 999px;
-  padding: .2rem .75rem; font-weight: 550;
+  padding: .2rem .75rem; font-weight: 600;
 }
 .meta span:last-child { background: var(--ok-bg); border-color: transparent; color: var(--ok-ink); }
 
@@ -104,7 +114,7 @@ header p { color: var(--muted); margin: .85rem 0 0; max-width: 44rem; font-size:
   border-bottom: 1px solid var(--line);
 }
 input[type=search], select {
-  font: inherit; padding: .55rem .8rem; border: 1px solid var(--line);
+  font: 400 var(--t-base)/1.4 var(--sans); padding: .55rem .8rem; border: 1px solid var(--line);
   border-radius: 11px; background: var(--card); color: var(--ink);
   height: 2.75rem;
   transition: height .22s ease, opacity .18s ease, font-size .22s ease;
@@ -114,7 +124,7 @@ input[type=search], select {
 .controls.slim { padding: .35rem 0; }
 .controls.slim input[type=search],
 .controls.slim select,
-.controls.slim .check { height: 2.1rem; font-size: .82rem; }
+.controls.slim .check { height: 2.1rem; font-size: var(--t-sm); }
 .controls.slim .check { padding: 0 .7rem; }
 @media (max-width: 560px) {
   .controls.slim .selects, .controls.slim .check {
@@ -139,7 +149,7 @@ input[type=search] { flex: 1 1 16rem; min-width: 10rem; }
 
 .check {
   transition: height .22s ease, opacity .18s ease, padding .22s ease;
-  display: inline-flex; align-items: center; gap: .5rem; font-size: .88rem; font-weight: 550;
+  display: inline-flex; align-items: center; gap: .5rem; font-size: var(--t-sm); font-weight: 600;
   color: var(--muted); cursor: pointer; user-select: none; white-space: nowrap;
   height: 2.75rem; padding: 0 .95rem;
   border: 1px solid var(--line); border-radius: 11px; background: var(--card);
@@ -188,7 +198,7 @@ main {
 /* category tag over the photo, one colour per category */
 .cat-chip {
   position: absolute; top: .6rem; left: .6rem;
-  font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+  font-size: var(--t-2xs); font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
   padding: .25rem .6rem; border-radius: 999px;
   background: rgba(20,25,27,.72); color: #fff;
   backdrop-filter: blur(8px); box-shadow: 0 1px 5px rgba(0,0,0,.25);
@@ -205,7 +215,7 @@ main {
 /* "1/4" chip + dots: the only signal a card has more than one photo */
 .photo-count {
   position: absolute; top: .6rem; right: .6rem;
-  font-size: .68rem; font-weight: 700; letter-spacing: .04em;
+  font-size: var(--t-2xs); font-weight: 600; letter-spacing: .04em;
   padding: .25rem .5rem; border-radius: 999px;
   background: rgba(0,0,0,.6); color: #fff;
   font-variant-numeric: tabular-nums; backdrop-filter: blur(6px);
@@ -225,7 +235,7 @@ main {
 .cardnav {
   position: absolute; top: 0; bottom: 0; width: 32%;
   border: 0; background: transparent; cursor: pointer; padding: 0;
-  color: #fff; font-size: 1.6rem; line-height: 1;
+  color: #fff; font-size: var(--icon-md); line-height: 1;
   display: flex; align-items: center; opacity: 0; transition: opacity .15s ease;
   -webkit-tap-highlight-color: transparent;
 }
@@ -241,7 +251,7 @@ main {
 .sold-stamp {
   position: absolute; inset: 0; display: grid; place-items: center;
   background: rgba(10,16,18,.55);
-  color: #fff; font-weight: 800; font-size: 1.4rem; letter-spacing: .22em;
+  color: #fff; font-weight: 700; font-size: var(--t-xl); letter-spacing: .22em;
   text-transform: uppercase; transform: rotate(-8deg); pointer-events: none;
 }
 .thumbs {
@@ -258,19 +268,19 @@ main {
 
 .body { padding: 1rem 1.05rem 1.05rem; display: flex; flex-direction: column; gap: .6rem; flex: 1; }
 h2 {
-  font-family: var(--display); font-weight: 600;
-  font-size: 1.15rem; margin: 0; letter-spacing: -.01em; line-height: 1.25;
+  font-family: var(--display); font-weight: 400;
+  font-size: var(--t-lg); margin: 0; letter-spacing: -.005em; line-height: 1.3;
   text-wrap: balance;
 }
 /* price sits with the title: the two things buyers compare across a grid */
 .titlerow { display: flex; align-items: baseline; justify-content: space-between; gap: .75rem; }
 .titlerow .pricewrap { margin: 0; flex-direction: column; align-items: flex-end; gap: 0; }
-.titlerow .price { font-size: 1.3rem; }
+
 
 /* ---- colour-coded badges ---- */
 .badges { display: flex; flex-wrap: wrap; gap: .3rem; }
 .badge {
-  font-size: .7rem; font-weight: 650; text-transform: uppercase; letter-spacing: .045em;
+  font-size: var(--t-2xs); font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
   border-radius: 999px; padding: .2rem .55rem;
   background: var(--neutral-bg); color: var(--neutral-ink);
 }
@@ -287,20 +297,20 @@ h2 {
 .pickup-coordinate { background: var(--info-bg);    color: var(--info-ink); }
 .pickup-deliver    { background: var(--ok-bg);      color: var(--ok-ink); }
 
-.dims { font-size: .84rem; color: var(--muted); margin: 0; }
-.notes { font-size: .89rem; margin: 0; color: var(--ink); }
+.dims { font-size: var(--t-sm); color: var(--muted); margin: 0; }
+.notes { font-size: var(--t-base); margin: 0; color: var(--ink); line-height: 1.5; }
 
 .foot {
   margin-top: auto; padding-top: .8rem;
   display: flex; align-items: stretch; gap: .45rem;
 }
 .pricewrap { margin-right: auto; display: flex; align-items: baseline; gap: .45rem; flex-wrap: wrap; }
-.retail { font-size: .78rem; color: var(--muted); text-decoration: line-through; text-decoration-thickness: 1px; }
-.price { font-weight: 700; font-size: 1.25rem; letter-spacing: -.02em;
-  font-variant-numeric: tabular-nums; }
+.retail { font-size: var(--t-xs); color: var(--muted); text-decoration: line-through; text-decoration-thickness: 1px; }
+.price { font-weight: 700; font-size: var(--t-xl); letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums; line-height: 1.15; }
 .price.free { color: var(--accent); }
 .btn {
-  font-size: .82rem; font-weight: 600; text-decoration: none;
+  font-size: var(--t-sm); font-weight: 600; text-decoration: none;
   color: var(--card); background: var(--ink);
   padding: .45rem .85rem; border-radius: 8px; white-space: nowrap;
   transition: filter .12s ease, transform .12s ease, background .12s ease;
@@ -309,9 +319,9 @@ h2 {
 .btn:hover { filter: brightness(1.12); transform: translateY(-1px); }
 .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-.empty { color: var(--muted); padding: 2rem 0; }
+.empty { color: var(--muted); padding: 2rem 0; font-size: var(--t-base); }
 footer {
-  color: var(--muted); font-size: .88rem; padding: 2rem 0 0;
+  color: var(--muted); font-size: var(--t-sm); padding: 2rem 0 0;
   border-top: 1px solid var(--line); margin-top: 3rem;
 }
 
@@ -340,7 +350,7 @@ footer {
 .lbnav.lbnext { left: auto; right: 0; justify-content: flex-end; padding: 0 1rem 0 0; }
 .lbnav span {
   width: 3rem; height: 3rem; border-radius: 50%;
-  background: rgba(0,0,0,.5); color: #fff; font-size: 1.9rem; line-height: 1;
+  background: rgba(0,0,0,.5); color: #fff; font-size: var(--icon-lg); line-height: 1;
   display: grid; place-items: center; padding-bottom: .2rem;
   backdrop-filter: blur(4px); transition: background .15s ease, scale .15s ease;
 }
@@ -350,14 +360,14 @@ footer {
   outline: none;
   position: fixed; top: 1rem; right: 1rem; z-index: 3;
   width: 2.5rem; height: 2.5rem; border: 0; border-radius: 50%; cursor: pointer;
-  background: rgba(0,0,0,.5); color: #fff; font-size: 1rem;
+  background: rgba(0,0,0,.5); color: #fff; font-size: var(--t-sm);
   display: grid; place-items: center; backdrop-filter: blur(4px);
 }
 #lbclose:hover { background: rgba(0,0,0,.85); }
 #lbclose:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 #lightboxcount {
   position: fixed; bottom: 1.25rem; left: 50%; translate: -50% 0;
-  color: #fff; font-size: .8rem; font-variant-numeric: tabular-nums;
+  color: #fff; font-size: var(--t-sm); font-variant-numeric: tabular-nums;
   background: rgba(0,0,0,.55); padding: .2rem .7rem; border-radius: 999px;
 }
 
