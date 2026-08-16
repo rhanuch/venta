@@ -349,18 +349,20 @@ function render() {
   // Group under category headings only in default order — a price sort or an
   // active search is a different question, and headings would fight the answer.
   if (sort === 'featured' && !cat && !q) {
-    const nodes = [];
-    let current = null;
+    // Bucket by category first. The CSV isn't ordered by category, so a run of
+    // the same category can appear more than once — emitting a heading on each
+    // change gave two "Kitchen" sections.
+    const groups = new Map();
     for (const i of list) {
       const c = i['category_' + lang] || i.category_en;
-      if (c !== current) {
-        current = c;
-        const n = list.filter(x => (x['category_' + lang] || x.category_en) === c).length;
-        const h = el('h3', 'section');
-        h.append(el('span', 'section-name', c), el('span', 'section-count', n));
-        nodes.push(h);
-      }
-      nodes.push(card(i));
+      if (!groups.has(c)) groups.set(c, []);
+      groups.get(c).push(i);
+    }
+    const nodes = [];
+    for (const [c, group] of groups) {
+      const h = el('h3', 'section');
+      h.append(el('span', 'section-name', c), el('span', 'section-count', group.length));
+      nodes.push(h, ...group.map(card));
     }
     grid.replaceChildren(...nodes);
   } else {
