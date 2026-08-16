@@ -146,6 +146,9 @@ function card(item) {
       stamp.append(el('span', null, t.status.sold));   // solid bar, legible over any photo
       frame.append(stamp);
     }
+    // Pending keeps its photo in full colour — the deal can still fall through
+    // and a second buyer is worth having. Just a tag, not a shroud.
+    if (status === 'pending') frame.append(el('span', 'pending-tag', t.status.pending));
     gal.append(frame);
 
     if (photos.length > 1) {
