@@ -1,12 +1,13 @@
 #!/bin/bash
 # Rebuilds docs/images from the source photo folders.
-# Add, remove or replace photos in SRC, run this, commit, push. Idempotent.
+# Add or replace photos in SRC, run this, commit, push. Idempotent.
+# It only ever writes; to delete a photo, delete it from docs/images directly.
 set -euo pipefail
 
 SRC="${1:-$HOME/Downloads/venta}"
 OUT="$(cd "$(dirname "$0")" && pwd)/docs/images"
 
-rm -rf "$OUT"
+# Merge, never wipe: some folders (uploaded straight to GitHub) have no local source.
 mkdir -p "$OUT"
 
 shopt -s nullglob nocaseglob
