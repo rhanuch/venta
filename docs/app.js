@@ -18,7 +18,7 @@ const T = {
     search: 'Search',
     allCats: 'All categories',
     sort: { featured: 'Default order', lowhigh: 'Price: low to high', highlow: 'Price: high to low' },
-    hidesold: 'Hide sold',
+    availonly: 'Available only',
     empty: 'Nothing matches that.',
     condition: { new: 'New', like_new: 'Like new', very_good: 'Very good', good: 'Good', fair: 'Fair' },
     status: { available: 'Available', pending: 'Pending pickup', sold: 'Sold' },
@@ -44,7 +44,7 @@ const T = {
     search: 'Buscar',
     allCats: 'Todas las categorías',
     sort: { featured: 'Orden por defecto', lowhigh: 'Precio: menor a mayor', highlow: 'Precio: mayor a menor' },
-    hidesold: 'Ocultar vendidos',
+    availonly: 'Solo disponibles',
     empty: 'No hay resultados.',
     condition: { new: 'Nuevo', like_new: 'Como nuevo', very_good: 'Muy bueno', good: 'Bueno', fair: 'Regular' },
     status: { available: 'Disponible', pending: 'Reservado', sold: 'Vendido' },
@@ -348,10 +348,10 @@ function render() {
   const q = $('q').value.trim().toLowerCase();
   const cat = $('cat').value;
   const sort = $('sort').value;
-  const hide = $('hidesold').checked;
+  const availOnly = $('availonly').checked;
 
   let list = items.filter(i => {
-    if (hide && i.status === 'sold') return false;
+    if (availOnly && i.status !== 'available') return false;   // hides sold and reserved
     if (cat && (i['category_' + lang] || i.category_en) !== cat) return false;
     if (!q) return true;
     return [i['name_' + lang], i.name_en, i['notes_' + lang], i['category_' + lang]]
@@ -404,7 +404,7 @@ function boot(text) {
   $('langlink').textContent = t.other;
   $('langlink').href = t.otherHref;
   $('q').placeholder = t.search;
-  $('hidesoldlabel').textContent = t.hidesold;
+  $('availonlylabel').textContent = t.availonly;
   $('empty').textContent = t.empty;
   $('footer').textContent = t.footer(AREA[lang]);
   $('trust').textContent = t.trust;
@@ -423,7 +423,7 @@ function boot(text) {
     ...Object.entries(t.sort).map(([v, label]) => new Option(label, v))
   );
 
-  ['q', 'cat', 'sort', 'hidesold'].forEach(id => $(id).addEventListener('input', render));
+  ['q', 'cat', 'sort', 'availonly'].forEach(id => $(id).addEventListener('input', render));
   initSlimBar();
   initLightbox();
 
